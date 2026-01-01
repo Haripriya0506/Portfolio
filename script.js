@@ -1,52 +1,65 @@
-// Typed Text Effect
-const roles = ["Java Developer", "Spring Boot Enthusiast", "DSA Solver"];
-let i = 0, j = 0, currentText = "", isDeleting = false;
-const typedElement = document.getElementById("typed-text");
+// Typed Text Effect// Mobile Navbar Toggle
+const navToggle = document.getElementById("nav-toggle");
+const navLinks = document.querySelector(".nav-links");
 
-function type() {
-  if(i >= roles.length) i = 0;
-  const fullText = roles[i];
+if (navToggle && navLinks) {
+  navToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("nav-open");
+  });
 
-  if(!isDeleting){
-    currentText = fullText.slice(0, j+1);
-    j++;
-    typedElement.textContent = currentText;
-    if(currentText === fullText) { isDeleting = true; setTimeout(type, 1500); return; }
-  } else {
-    currentText = fullText.slice(0, j-1);
-    j--;
-    typedElement.textContent = currentText;
-    if(currentText === "") { isDeleting = false; i++; }
-  }
-  setTimeout(type, isDeleting ? 100 : 200);
+  navLinks.addEventListener("click", (e) => {
+    if (e.target.tagName === "A") {
+      navLinks.classList.remove("nav-open");
+    }
+  });
 }
-type();
 
-const cursor = document.querySelector(".cursor-glow");
+// Smooth Scroll for Anchor Links
+const scrollLinks = document.querySelectorAll('a[href^="#"]');
 
-document.addEventListener("mousemove", (e) => {
-  cursor.style.left = e.clientX + "px";
-  cursor.style.top = e.clientY + "px";
+scrollLinks.forEach((link) => {
+  link.addEventListener("click", (e) => {
+    const targetId = link.getAttribute("href");
+    if (targetId && targetId.length > 1) {
+      const targetEl = document.querySelector(targetId);
+      if (targetEl) {
+        e.preventDefault();
+        const offsetTop = targetEl.offsetTop - 70;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: "smooth",
+        });
+      }
+    }
+  });
 });
 
+// Reveal Cards on Scroll
+const revealElements = document.querySelectorAll(
+  ".card, .hero-content, .about-content, .contact-content"
+);
 
+revealElements.forEach((el) => el.classList.add("reveal-hidden"));
 
-// tsParticles Background
-tsParticles.load("tsparticles", {
-  background: { color: { value: "#121212" } },
-  fpsLimit: 60,
-  particles: {
-    number: { value: 80 },
-    color: { value: ["#00bcd4", "#ff4081", "#ff9800"] },
-    shape: { type: "circle" },
-    opacity: { value: 0.7 },
-    size: { value: { min: 3, max: 7 } },
-    move: { enable: true, speed: 2, direction: "none", random: true, outModes: { default: "bounce" } },
-    links: { enable: true, distance: 120, color: "#ffffff", opacity: 0.4, width: 1 }
-  },
-  interactivity: {
-    events: { onHover: { enable: true, mode: "bubble" }, onClick: { enable: true, mode: "push" } },
-    modes: { bubble: { distance: 150, size: 10, color: "#ff4081", duration: 2 }, push: { quantity: 4 } }
-  },
-  detectRetina: true
-});
+const observerOptions = {
+  root: null,
+  threshold: 0.15,
+};
+
+const observer = new IntersectionObserver((entries, obs) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("reveal-show");
+      obs.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+revealElements.forEach((el) => observer.observe(el));
+
+// Dynamic Year in Footer
+const yearSpan = document.getElementById("year");
+if (yearSpan) {
+  yearSpan.textContent = new Date().getFullYear();
+}
+
